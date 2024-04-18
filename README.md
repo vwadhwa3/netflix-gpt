@@ -3,9 +3,13 @@
 -Configured TailwindCSS
 
 # Features
--Browse
+-login/Sign up
+
+-Browse after authentication
     - Header
     -Main Movie
         -Trailer
         -title & Description
         - Movie Suggestion
+
+-firebase
