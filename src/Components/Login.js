@@ -8,13 +8,14 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { auth } from  "../Utils/firebase"
+import { useNavigate } from "react-router-dom";
 const Login = () => {
   const [isSignInForm, setIsSignInForm] = useState(true);
   const [errorMessage,setErrorMessage] =useState(null)
   const email = useRef(null);
   const password= useRef(null);
   const name = useRef(null);
-  
+  const navigate = useNavigate();
   const toggleSignInForm = () => {
     setIsSignInForm(!isSignInForm);
   };
@@ -24,22 +25,32 @@ const Login = () => {
     if(message) return;
     if(!isSignInForm){
         //sign up logic
-        signInWithEmailAndPassword(
-          auth,
-          email.current.value,
-          password.current.value
-        ).then((userCredential) => {
-              // Signed in 
-              const user = userCredential.user;
-               console.log(user);
-  })
-  .catch((error) => {
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    setErrorMessage(errorCode + "-" + errorMessage)
-  });
+        createUserWithEmailAndPassword(auth,email.current.value,password.current.value)
+        .then((userCredential) => {
+          // Signed up 
+          const user = userCredential.user;
+          console.log(user)
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          setErrorMessage(errorCode + "-"+errorMessage)
+        });
     }else{
       // sign in logic
+      signInWithEmailAndPassword(auth,email.current.value,password.current.value)
+      .then((userCredential) => {
+        // Signed in 
+        const user = userCredential.user;
+        console.log(user)
+        navigate("/netflix-gpt/src/Components/Browse");
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        setErrorMessage(errorCode + "-"+errorMessage)
+      });
+
     }
   }
 
