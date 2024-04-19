@@ -2,20 +2,45 @@ import { useRef, useState } from "react";
 import Header from "./Header";
 import { BG_URL } from "../Utils/constants";
 import {checkValidData} from "../Utils/vaildate"
-
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
+import { auth } from  "../Utils/firebase"
 const Login = () => {
   const [isSignInForm, setIsSignInForm] = useState(true);
   const [errorMessage,setErrorMessage] =useState(null)
-  //const [password,setPassword] =useState("")
   const email = useRef(null);
   const password= useRef(null);
   const name = useRef(null);
+  
   const toggleSignInForm = () => {
     setIsSignInForm(!isSignInForm);
   };
   const handdleButtonClick= () =>{   
     const message = checkValidData(email.current.value,password.current.value)
     setErrorMessage(message)
+    if(message) return;
+    if(!isSignInForm){
+        //sign up logic
+        signInWithEmailAndPassword(
+          auth,
+          email.current.value,
+          password.current.value
+        ).then((userCredential) => {
+              // Signed in 
+              const user = userCredential.user;
+               console.log(user);
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    setErrorMessage(errorCode + "-" + errorMessage)
+  });
+    }else{
+      // sign in logic
+    }
   }
 
   return (
@@ -49,7 +74,7 @@ const Login = () => {
           placeholder="Password"
           className="p-4 my-4 w-full bg-gray-700"
         />
-        <p className="p-red-500 font-bold ">{setErrorMessage}</p>
+        <p className="p-red-500 font-bold ">{errorMessage}</p>
         <button className="p-4 my-6 bg-red-700 w-full rounded-lg"  onClick={handdleButtonClick}>
           {isSignInForm ? "Sign In" : "Sign Up"}         
         </button>
